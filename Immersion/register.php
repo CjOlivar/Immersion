@@ -1,44 +1,43 @@
 <?php
 session_start();
-require_once "database.php";
+require_once "data_functions.php";
 
 $registration_message = "";
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["register"])) {
-    $username = $conn->real_escape_string($_POST["reg_username"]);
+    $username = $_POST["reg_username"];
     $password = $_POST["reg_password"];
     $confirm_password = $_POST["confirm_password"];
     
     
-    $sql = "SELECT id FROM users WHERE username = '$username'";
-    $result = $conn->query($sql);
+    $existing_user = get_user_by_username($username);
     
-    if ($result->num_rows > 0) {
+    if ($existing_user) {
         $registration_message = "Username already taken";
     } else if ($password != $confirm_password) {
         $registration_message = "Passwords do not match";
     } else {
         
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         
-        $sql = "INSERT INTO users (username, password) VALUES ('$username', '$hashed_password')";
         
-        if ($conn->query($sql) === TRUE) {
+        $user_id = add_user($username, $hashed_password);
+        
+        if ($user_id) {
             $registration_message = "Registration successful! You can now login.";
             $_SESSION["registration_success"] = true;
         } else {
-            $registration_message = "Error: " . $sql . "<br>" . $conn->error;
+            $registration_message = "Error: Could not create user account";
         }
     }
     
     
     $_SESSION["registration_message"] = $registration_message;
-    header("location: loginpage.html");
+    header("location: index.php");
     exit;
-}
-else {
+} else {
     
-    header("location: loginpage.html");
+    header("location: index.php");
     exit;
 }
 ?>

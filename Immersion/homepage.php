@@ -1,58 +1,26 @@
 <?php
 session_start();
-require_once "database.php";
-
-
+require_once "data_functions.php";
 if (!isset($_SESSION["loggedin"])) {
-    header("location: index.html");
+    header("location: index.php");
     exit;
 }
-
-
 $details_message = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["save_details"])) {
     $user_id = $_SESSION["id"];
-    $full_name = $conn->real_escape_string($_POST["name"]);
-    $age = $conn->real_escape_string($_POST["age"]);
-    $gender = $conn->real_escape_string($_POST["gender"]);
-    $email = $conn->real_escape_string($_POST["email"]);
-    $phone = $conn->real_escape_string($_POST["phone"]);
+    $full_name = $_POST["name"];
+    $age = $_POST["age"];
+    $gender = $_POST["gender"];
+    $email = $_POST["email"];
+    $phone = $_POST["phone"];
     
-    
-    $sql = "SELECT id FROM user_details WHERE user_id = '$user_id'";
-    $result = $conn->query($sql);
-    
-    if ($result->num_rows > 0) {
-        
-        $sql = "UPDATE user_details SET 
-                full_name = '$full_name', 
-                age = '$age', 
-                gender = '$gender', 
-                email = '$email', 
-                phone = '$phone' 
-                WHERE user_id = '$user_id'";
-    } else {
-        
-        $sql = "INSERT INTO user_details (user_id, full_name, age, gender, email, phone) 
-                VALUES ('$user_id', '$full_name', '$age', '$gender', '$email', '$phone')";
-    }
-    
-    if ($conn->query($sql) === TRUE) {
+    if (save_user_detail($user_id, $full_name, $age, $gender, $email, $phone)) {
         $details_message = "Details saved successfully!";
     } else {
-        $details_message = "Error: " . $sql . "<br>" . $conn->error;
+        $details_message = "Error: Could not save details";
     }
 }
-
-
-$user_details = null;
-$user_id = $_SESSION["id"];
-$sql = "SELECT * FROM user_details WHERE user_id = '$user_id'";
-$result = $conn->query($sql);
-
-if ($result->num_rows > 0) {
-    $user_details = $result->fetch_assoc();
-}
+$user_details = get_details_by_user_id($_SESSION["id"]);
 ?>
 
 <!DOCTYPE html>
@@ -124,7 +92,7 @@ if ($result->num_rows > 0) {
             <?php endif; ?>
         </div>
         
-        <a href="logout.php" class="btn">Logout</a>
+        <a href="logout.php" style="display: block; text-align: center; margin-top: 20px; padding: 12px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">Logout</a>
     </div>
 </body>
 </html>

@@ -1,38 +1,110 @@
 <?php
+define('USERS_FILE', 'data/users.json');
+define('USER_DETAILS_FILE', 'data/user_details.json');
 
-$host = "localhost";
-$dbUsername = "root";
-$dbPassword = "";
-$dbName = "user_portal";
-
-
-$conn = new mysqli($host, $dbUsername, $dbPassword, $dbName);
-
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+function init_data_storage() {
+    if (!file_exists('data')) {
+        mkdir('data', 0755);
+    }    
+    if (!file_exists(USERS_FILE)) {   
+        $default_user = [
+            [
+                'id' => 1,
+                'username' => 'user',
+                'password' => '$2y$10$V7rGl10HXW4mCg8PQa/8Jer1d8ZPZu6Py9NjnTBgQVcSPi8.e7/LO', 
+                'created_at' => date('Y-m-d H:i:s')
+            ]
+        ];
+        file_put_contents(USERS_FILE, json_encode($default_user, JSON_PRETTY_PRINT));
+        chmod(USERS_FILE, 0644);
+    } 
+    if (!file_exists(USER_DETAILS_FILE)) {
+        file_put_contents(USER_DETAILS_FILE, json_encode([]));
+        chmod(USER_DETAILS_FILE, 0644);
+    }
 }
-
-
-$sql_users = "CREATE TABLE IF NOT EXISTS users (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)";
-
-$sql_details = "CREATE TABLE IF NOT EXISTS user_details (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    user_id INT(11) NOT NULL,
-    full_name VARCHAR(100),
-    age INT(3),
-    gender VARCHAR(20),
-    email VARCHAR(100),
-    phone VARCHAR(20),
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-)";
-
-$conn->query($sql_users);
-$conn->query($sql_details);
+function get_users() {
+    init_data_storage();
+    $json = file_get_contents(USERS_FILE);
+    return json_decode($json, true) ?: [];
+}
+function save_users($users) {
+    init_data_storage();
+    file_put_contents(USERS_FILE, json_encode($users, JSON_PRETTY_PRINT));
+}
+function get_user_by_username($username) {
+    $users = get_users();
+    foreach ($users as $user) {
+        if ($user['username'] === $username) {
+            return $user;
+        }
+    }
+    return null;
+}
+function get_user_by_id($id) {
+    $users = get_users();
+    foreach ($users as $user) {
+        if ($user['id'] === $id) {
+            return $user;
+        }
+    }
+    return null;
+}
+function get_user_details() {
+    init_data_storage();
+    $json = file_get_contents(USER_DETAILS_FILE);
+    return json_decode($json, true) ?: [];
+}
+function save_user_details($details) {
+    init_data_storage();
+    file_put_contents(USER_DETAILS_FILE, json_encode($details, JSON_PRETTY_PRINT));
+}
+function get_details_by_user_id($user_id) {
+    $details = get_user_details();
+    foreach ($details as $detail) {
+        if ($detail['user_id'] === $user_id) {
+            return $detail;
+        }
+    }
+    return null;
+}
+function save_user_detail($user_id, $full_name, $age, $gender, $email, $phone) {
+    $details = get_user_details();
+    $found = false;  
+    foreach ($details as &$detail) {
+        if ($detail['user_id'] === $user_id) {
+            $detail['full_name'] = $full_name;
+            $detail['age'] = $age;
+            $detail['gender'] = $gender;
+            $detail['email'] = $email;
+            $detail['phone'] = $phone;
+            $detail['updated_at'] = date('Y-m-d H:i:s');
+            $found = true;
+            break;
+        }
+    }    
+    if (!$found) {
+        
+        $max_id = 0;
+        foreach ($details as $detail) {
+            if ($detail['id'] > $max_id) {
+                $max_id = $detail['id'];
+            }
+        }
+        $new_id = $max_id + 1;
+        
+        $details[] = [
+            'id' => $new_id,
+            'user_id' => $user_id,
+            'full_name' => $full_name,
+            'age' => $age,
+            'gender' => $gender,
+            'email' => $email,
+            'phone' => $phone,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+    }  
+    save_user_details($details);
+    return true;
+}
 ?>

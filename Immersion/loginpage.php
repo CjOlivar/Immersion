@@ -1,20 +1,21 @@
 <?php
 session_start();
-require_once "database.php";
+require_once "data_functions.php";
 
 $login_error = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
-    $username = $conn->real_escape_string($_POST["username"]);
+    $username = $_POST["username"];
     $password = $_POST["password"];
-    $sql = "SELECT id, username, password FROM users WHERE username = '$username'";
-    $result = $conn->query($sql);
     
-    if ($result->num_rows == 1) {
-        $row = $result->fetch_assoc();
-        if (password_verify($password, $row["password"])) {
+    
+    $user = get_user_by_username($username);
+    
+    if ($user) {
+        
+        if (password_verify($password, $user["password"])) {
             $_SESSION["loggedin"] = true;
-            $_SESSION["id"] = $row["id"];
-            $_SESSION["username"] = $row["username"];
+            $_SESSION["id"] = $user["id"];
+            $_SESSION["username"] = $user["username"];
 
             header("location: homepage.php");
             exit;
@@ -27,12 +28,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
     
     if (!empty($login_error)) {
         $_SESSION["login_error"] = $login_error;
-        header("location: index.html");
+        header("location: index.php");
         exit;
     }
-}
-else {
-    header("location: index.html");
+} else {
+    header("location: index.php");
     exit;
 }
 ?>
