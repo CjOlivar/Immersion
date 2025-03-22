@@ -1,0 +1,56 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Portal</title>
+    <link rel="stylesheet" href="design.css">
+</head>
+<body>
+    <div class="container" id="auth-container">
+        <div class="tab-container">
+            <button class="tab-button active" onclick="showTab('login')">Login</button>
+            <button class="tab-button" onclick="showTab('register')">Register</button>
+        </div>
+        
+        <div id="login" class="auth-tab">
+            <h1>Login</h1>
+            <form action="loginpage.php"method="post">
+                <div class="error-message" id="loginError"></div>
+                
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" name="login">Login</button>
+            </form>
+        </div>
+        
+        <div id="register" class="auth-tab" style="display: none;">
+            <h1>Register</h1>
+            <form method="post" action="register.php">
+                <div class="message" id="registerMessage"></div>
+                
+                <div class="form-group">
+                    <label for="reg_username">Username</label>
+                    <input type="text" id="reg_username" name="reg_username" placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg_password">Password</label>
+                    <input type="password" id="reg_password" name="reg_password" placeholder="Choose a password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                </div>
+                <button type="submit" name="register">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

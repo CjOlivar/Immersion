@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Portal</title>
+    <link rel="stylesheet" href="design.css">
+</head>
+<body>
+    <div class="container login-page" id="loginPage">
+        <h1>Login</h1>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter your username">
+            <div class="error-message" id="usernameError"></div>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password">
+            <div class="error-message" id="passwordError"></div>
+        </div>
+        <button id="loginButton">Login</button>
+        
+    </div>
+
+    <div class="container homepage" id="homepage">
+        <h1>Homepage</h1>
+        
+        <div class="details-section">
+            <h2>Enter Your Details</h2>
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" id="age" placeholder="Enter your age" min="1" max="120">
+            </div>
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select id="gender">
+                    <option value="">Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                    <option value="prefer-not-to-say">Prefer not to say</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" placeholder="Enter your phone number">
+            </div>
+            <button id="saveButton">Save Details</button>
+            <div class="success-message" id="saveSuccess"></div>
+        </div>
+        
+        <div class="saved-details">
+            <h2>Saved Details</h2>
+            <div id="savedDetailsContent">
+                <p>No details saved yet. Please fill in your information above.</p>
+            </div>
+        </div>
+        
+        <button id="logoutButton">Logout</button>
+    </div>
+
+    <script src="script.js">
+    </script>
+</body>
+</html>
