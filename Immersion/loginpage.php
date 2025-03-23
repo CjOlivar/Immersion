@@ -1,38 +1,26 @@
 <?php
 session_start();
-require_once "data_functions.php";
+$valid_username = "user";
+$valid_password = "password123";
 
-$login_error = "";
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST["username"];
     $password = $_POST["password"];
-    
-    
-    $user = get_user_by_username($username);
-    
-    if ($user) {
-        
-        if (password_verify($password, $user["password"])) {
-            $_SESSION["loggedin"] = true;
-            $_SESSION["id"] = $user["id"];
-            $_SESSION["username"] = $user["username"];
-
-            header("location: homepage.php");
-            exit;
-        } else {
-            $login_error = "Invalid password";
-        }
-    } else {
-        $login_error = "Username not found";
+       
+    if ($username === $valid_username && $password === $valid_password) {
+        $_SESSION["loggedin"] = true;
+        $_SESSION["username"] = $username;    
+        echo json_encode(['success' => true]);
+    } else {        
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid username or password. Please try again.'
+        ]);
     }
-    
-    if (!empty($login_error)) {
-        $_SESSION["login_error"] = $login_error;
-        header("location: index.php");
-        exit;
-    }
-} else {
-    header("location: index.php");
-    exit;
+} else {  
+    echo json_encode([
+        'success' => false,
+        'message' => 'Invalid request method.'
+    ]);
 }
 ?>
